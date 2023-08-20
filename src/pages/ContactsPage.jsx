@@ -6,13 +6,18 @@ import { Button, Container, Typography } from '@mui/material';
 import AddContactForm from 'components/AddContactForm/AddContactForm';
 import { ContactsList } from 'components/ContactsList/ContactsList';
 import EditContactForm from 'components/EditContactForm/EditContactForm';
+import AnimatedMessage from 'components/Message/AnimatedMessage';
 import { ModalWindow } from 'components/ModalWindow/ModalWindow';
 import { fetchContacts } from 'redux/contacts/operations';
-import { selectContacts } from 'redux/contacts/selectors';
+import { selectContacts, selectError } from 'redux/contacts/selectors';
 
 const ContactsPage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [modalChildren, setModalChildren] = useState(null);
+
+  const error = useSelector(selectError);
+
+  const [message, setMessage] = useState(null);
 
   const dispatch = useDispatch();
   const contacts = useSelector(selectContacts);
@@ -23,7 +28,9 @@ const ContactsPage = () => {
 
   const handleAddContactButtonClick = () => {
     setOpenModal(true);
-    setModalChildren(<AddContactForm setOpenModal={setOpenModal} />);
+    setModalChildren(
+      <AddContactForm setOpenModal={setOpenModal} setMessage={setMessage} />
+    );
   };
   const handleEditContactButtonClick = (id, name, number) => {
     setOpenModal(true);
@@ -33,6 +40,7 @@ const ContactsPage = () => {
         name={name}
         number={number}
         setOpenModal={setOpenModal}
+        setMessage={setMessage}
       />
     );
   };
@@ -62,6 +70,7 @@ const ContactsPage = () => {
         <ContactsList
           editContact={handleEditContactButtonClick}
           contacts={contacts}
+          setMessage={setMessage}
         />
       </Container>
       <ModalWindow
@@ -69,6 +78,10 @@ const ContactsPage = () => {
         children={modalChildren}
         handleModalState={setOpenModal}
       />
+      {message && !error && (
+        <AnimatedMessage type={message.type} message={message.message} />
+      )}
+      {error && <AnimatedMessage type="error" message="Something went wrong" />}
     </>
   );
 };

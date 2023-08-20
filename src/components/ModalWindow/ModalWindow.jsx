@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
@@ -18,7 +19,7 @@ const style = {
 };
 
 export const ModalWindow = ({ openModal, handleModalState, children }) => {
-  return (
+  return createPortal(
     <div>
       <Modal
         open={openModal}
@@ -28,6 +29,7 @@ export const ModalWindow = ({ openModal, handleModalState, children }) => {
       >
         <Box sx={{ ...style, width: 400 }}>{children}</Box>
       </Modal>
-    </div>
+    </div>,
+    document.querySelector('#message-root')
   );
 };
